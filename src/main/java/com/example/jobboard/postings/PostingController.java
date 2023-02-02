@@ -2,40 +2,40 @@ package com.example.jobboard.postings;
 
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/postings")
 public class PostingController {
 
+    private final PostingService postingService;
+
+    public PostingController(PostingService postingService) {
+        this.postingService = postingService;
+    }
+
     @GetMapping
-    public String getAll() {
-        return "GET - get all";
+    public List<Posting> getAll() {
+        return postingService.getAll();
     }
 
     @GetMapping("/{id}")
     public Posting getByID(@PathVariable Long id) {
-        return new Posting(
-                id,
-                "super fajna praca",
-                new BigDecimal("100000"),
-                LocalDate.now().plusMonths(1)
-        );
+        return postingService.getById(id).orElse(null);
     }
 
     @PostMapping
-    public String add() {
-        return "POST - ok";
+    public Posting add(@RequestBody Posting posting) {
+        return postingService.add(posting);
     }
 
-    @PutMapping
-    public String update() {
-        return "PUT - ok";
+    @PutMapping("/{id}")
+    public Posting update(@PathVariable Long id, @RequestBody Posting posting) {
+        return postingService.update(id, posting);
     }
 
-    @DeleteMapping
-    public String delete() {
-        return "DELETE - ok";
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        postingService.deleteByID(id);
     }
 }
